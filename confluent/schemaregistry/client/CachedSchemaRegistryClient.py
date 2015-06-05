@@ -226,7 +226,7 @@ class CachedSchemaRegistryClient(object):
             url += '/' + subject
 
         body = { "compatibility" : level }
-        result,meta,code = self._send_request(url, method='POST', body=body)
+        result,meta,code = self._send_request(url, method='PUT', body=body)
         return result['compatibility']
 
     def get_compatibility(self, subject=None):
