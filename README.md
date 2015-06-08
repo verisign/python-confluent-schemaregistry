@@ -5,6 +5,11 @@ A Python client used to interact with [Confluent](http://confluent.io/)'s
 
 The API is heavily based off of the existing Java API of [Confluent schema registry](https://github.com/confluentinc/schema-registry).
 
+# Installation
+
+Run `python setup.py install` from the source root.
+
+This library will be available via `pip` in the future.
 
 # Example Usage
 
@@ -42,7 +47,7 @@ schema_version = client.get_version('my_subject', avro_schema)
 is_compatible = client.test_compatibility('my_subject', another_schema)
 
 # One of NONE, FULL, FORWARD, BACKWARD
-new*level = client.update*compatibility('NONE','my_subject')
+new_level = client.update*compatibility('NONE','my_subject')
 current_level = client.get_compatibility('my_subject')
 
 # Message operations
