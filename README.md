@@ -47,7 +47,7 @@ schema_version = client.get_version('my_subject', avro_schema)
 is_compatible = client.test_compatibility('my_subject', another_schema)
 
 # One of NONE, FULL, FORWARD, BACKWARD
-new_level = client.update*compatibility('NONE','my_subject')
+new_level = client.update_compatibility('NONE','my_subject')
 current_level = client.get_compatibility('my_subject')
 
 # Message operations
