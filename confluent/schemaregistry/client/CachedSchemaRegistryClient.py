@@ -240,4 +240,8 @@ class CachedSchemaRegistryClient(object):
             url += '/' + subject
 
         result,meta,code = self._send_request(url)
-        return result['compatibility']
+        compatibility = result.get('compatibility', None)
+        if not compatibility:
+            compatbility = result.get('compatibilityLevel')
+
+        return compatbility
