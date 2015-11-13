@@ -207,7 +207,7 @@ class CachedSchemaRegistryClient(object):
         body = { 'schema' : json.dumps(avro_schema.to_json()) }
         try:
             result,meta,code = self._send_request(url, method='POST', body=body)
-            return result.get('is_compatible') == "true"
+            return result.get('is_compatible')
         except:
             return False
 
