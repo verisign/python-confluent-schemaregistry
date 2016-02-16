@@ -166,7 +166,7 @@ class MessageSerializer(object):
         self.id_to_decoder_func[schema_id] = decoder
         return self.id_to_decoder_func[schema_id]
 
-    def decode_message(self, message):
+    def decode_message(self, message, with_schema_id=False):
         """
         Decode a message from kafka that has been encoded for use with
         the schema registry.
@@ -179,4 +179,8 @@ class MessageSerializer(object):
             if magic != MAGIC_BYTE:
                 raise SerializerError("message does not start with magic byte")
             decoder_func = self._get_decoder_func(schema_id, payload)
-            return decoder_func(payload)
+            decoded = decoder_func(payload)
+            if with_schema_id:
+                return (decoded, schema_id)
+            else:
+                return decoded
