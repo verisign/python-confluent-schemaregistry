@@ -55,6 +55,8 @@ class MessageSerializer(object):
         try:
             schema_id = self.registry_client.register(subject, schema)
         except:
+            message_none = "Exception, schema_id will be set to None! %s" % (schema_id)
+            raise SerializerError(message_none)
             schema_id = None
 
         if not schema_id:
