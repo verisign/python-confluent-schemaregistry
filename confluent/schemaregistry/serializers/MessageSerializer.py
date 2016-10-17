@@ -4,6 +4,7 @@ import json
 import struct
 import sys
 
+from confluent.schemaregistry.client import ClientError
 from . import SerializerError
 
 MAGIC_BYTE = 0
