@@ -1,3 +1,4 @@
+# coding=utf-8
 
 VALID_LEVELS=['NONE','FULL','FORWARD','BACKWARD']
 
