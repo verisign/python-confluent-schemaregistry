@@ -94,7 +94,7 @@ class CachedSchemaRegistryClient(object):
         """ 计算avro schema hash
         """
         md5 = hashlib.md5()
-        md5.update(avro_schema.to_json())
+        md5.update(json.dumps(avro_schema.to_json()))
         return md5.hexdigest()
 
     def register(self, subject, avro_schema):
