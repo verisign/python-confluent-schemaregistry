@@ -1,6 +1,9 @@
+# coding=utf-8
+
 import urllib2
 import json
 import sys
+import hashlib
 
 from . import ClientError, VALID_LEVELS
 from ..serializers import Util
@@ -68,13 +71,13 @@ class CachedSchemaRegistryClient(object):
             msg = "An unexpected error occurred: %s" % (str(sys.exc_info()[1]))
             raise ClientError(msg)
 
-    def _add_to_cache(self, cache, subject, schema, value):
+    def _add_to_cache(self, cache, subject, schema_hash, value):
         if subject not in cache:
             cache[subject] = { }
         sub_cache = cache[subject]
-        sub_cache[schema] = value
+        sub_cache[schema_hash] = value
 
-    def _cache_schema(self, schema, schema_id, subject=None, version=None):
+    def _cache_schema(self, schema_hash, schema, schema_id, subject=None, version=None):
         # don't overwrite anything
         if schema_id in self.id_to_schema:
             schema = self.id_to_schema[schema_id]
@@ -83,11 +86,16 @@ class CachedSchemaRegistryClient(object):
 
         if subject:
             self._add_to_cache(self.subject_to_schema_ids,
-                               subject, schema, schema_id)
+                               subject, schema_hash, schema_id)
             if version:
                 self._add_to_cache(self.subject_to_schema_versions,
-                                   subject, schema, version)
-
+                                   subject, schema_hash, version)
+    def _hash(self, avro_schema):
+        """ 计算avro schema hash
+        """
+        md5 = hashlib.md5()
+        md5.update(json.dumps(avro_schema.to_json()))
+        return md5.hexdigest()
 
     def register(self, subject, avro_schema):
         """
@@ -98,8 +106,10 @@ class CachedSchemaRegistryClient(object):
 
         Multiple instances of the same schema will result in cache misses.
         """
+        # 计算schema hash
+        avro_schema_hash = self._hash(avro_schema)
         schemas_to_id = self.subject_to_schema_ids.get(subject, { })
-        schema_id = schemas_to_id.get(avro_schema, -1)
+        schema_id = schemas_to_id.get(avro_schema_hash, -1)
         if schema_id != -1:
             return schema_id
 
@@ -111,7 +121,7 @@ class CachedSchemaRegistryClient(object):
         # result is a dict
         schema_id = result['id']
         # cache it
-        self._cache_schema(avro_schema, schema_id, subject)
+        self._cache_schema(avro_schema_hash, avro_schema, schema_id, subject)
         return schema_id
 
     def get_by_id(self, schema_id):
@@ -133,7 +143,7 @@ class CachedSchemaRegistryClient(object):
             try:
                 result = Util.parse_schema_from_string(schema_str)
                 # cache it
-                self._cache_schema(result, schema_id)
+                self._cache_schema(self._hash(result), result, schema_id)
                 return result
             except:
                 # bad schema - should not happen
@@ -167,7 +177,7 @@ class CachedSchemaRegistryClient(object):
                 # bad schema - should not happen
                 raise ClientError("Received bad schema from registry.")
 
-        self._cache_schema(schema, schema_id, subject, version)
+        self._cache_schema(self._hash(schema), schema, schema_id, subject, version)
         return (schema_id, schema, version)
 
 
@@ -177,8 +187,9 @@ class CachedSchemaRegistryClient(object):
 
         Returns -1 if not found.
         """
+        avro_schema_hash = self._hash(avro_schema)
         schemas_to_version = self.subject_to_schema_versions.get(subject,{})
-        version = schemas_to_version.get(avro_schema, -1)
+        version = schemas_to_version.get(avro_schema_hash, -1)
         if version != -1:
             return version
 
@@ -188,7 +199,7 @@ class CachedSchemaRegistryClient(object):
             result,meta,code = self._send_request(url, method='POST', body=body)
             schema_id = result['id']
             version = result['version']
-            self._cache_schema(avro_schema, schema_id, subject, version)
+            self._cache_schema(avro_schema_hash, avro_schema, schema_id, subject, version)
             return version
         except ClientError as e:
             if e.http_code == 404:

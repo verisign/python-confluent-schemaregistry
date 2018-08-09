@@ -1,3 +1,5 @@
+# coding=utf-8
+
 from avro import io
 import StringIO
 import json

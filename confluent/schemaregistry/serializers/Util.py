@@ -1,3 +1,5 @@
+# coding=utf-8
+
 """
 Basic utilities for handling avro schemas
 """
