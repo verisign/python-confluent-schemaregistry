@@ -22,7 +22,7 @@ setup(
 
     # Project uses simplejson, so ensure that it gets installed or upgraded
     # on the target machine
-    install_requires = ['avro'],
+    install_requires = ['avro-python3'],
 
     # metadata for upload to PyPI
     author = 'Verisign',

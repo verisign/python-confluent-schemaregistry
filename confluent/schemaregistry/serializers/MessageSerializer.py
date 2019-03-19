@@ -1,5 +1,5 @@
 from avro import io
-import StringIO
+from io import BytesIO
 import json
 import struct
 import sys
@@ -16,7 +16,7 @@ except:
     pass
 
 
-class ContextStringIO(StringIO.StringIO):
+class ContextBytesIO(BytesIO):
     """
     Wrapper to allow use of StringIO via 'with' constructs.
     """
@@ -174,7 +174,7 @@ class MessageSerializer(object):
         if len(message) <= 5:
             raise SerializerError("message is too small to decode")
 
-        with ContextStringIO(message) as payload:
+        with ContextBytesIO(message) as payload:
             magic,schema_id = struct.unpack('>bI',payload.read(5))
             if magic != MAGIC_BYTE:
                 raise SerializerError("message does not start with magic byte")
