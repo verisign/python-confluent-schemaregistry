@@ -1,12 +1,14 @@
 from avro import io
 from io import BytesIO
 import json
+import logging
 import struct
 import sys
 
 from . import SerializerError
 
 MAGIC_BYTE = 0
+_LOGGER = logging.getLogger(__name__)
 
 HAS_FAST = False
 try:
@@ -132,6 +134,7 @@ class MessageSerializer(object):
         try:
             schema = self.registry_client.get_by_id(schema_id)
         except:
+            _LOGGER.info("failed to get schema {} from registry".format(schema_id), exc_info=sys.exc_info())
             schema = None
 
         if not schema:
