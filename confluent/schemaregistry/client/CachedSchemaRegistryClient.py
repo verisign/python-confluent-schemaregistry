@@ -33,7 +33,7 @@ class CachedSchemaRegistryClient(object):
         if body:
             body = json.dumps(body)
 
-        new_req = urllib.Request(url, data=body)
+        new_req = urllib.request.Request(url, data=body)
         # must be callable
         new_req.get_method = lambda: method
         # set the accept header
