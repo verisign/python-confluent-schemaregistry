@@ -50,7 +50,7 @@ class CachedSchemaRegistryClient(object):
             # read response
             result = json.loads(response.read())
             # build meta with headers as a dict
-            meta = response.info().dict
+            meta = dict(response.info().items())
             # http code
             code = response.getcode()
             # return result + meta tuple
