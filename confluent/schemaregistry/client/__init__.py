@@ -14,5 +14,5 @@ class ClientError(Exception, object):
     def __str__(self):
         return self.message
 
-from MockSchemaRegistryClient import *
-from CachedSchemaRegistryClient import *
+from .MockSchemaRegistryClient import *
+from .CachedSchemaRegistryClient import *
