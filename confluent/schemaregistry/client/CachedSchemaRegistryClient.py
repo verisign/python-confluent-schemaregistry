@@ -1,4 +1,4 @@
-import urllib2
+import urllib
 import json
 import sys
 
@@ -33,7 +33,7 @@ class CachedSchemaRegistryClient(object):
         if body:
             body = json.dumps(body)
 
-        new_req = urllib2.Request(url, data=body)
+        new_req = urllib.request.Request(url, data=body)
         # must be callable
         new_req.get_method = lambda: method
         # set the accept header
@@ -46,16 +46,16 @@ class CachedSchemaRegistryClient(object):
             for header_name in headers:
                 new_req.add_header(header_name, headers[header_name])
         try:
-            response = urllib2.urlopen(new_req)
+            response = urllib.request.urlopen(new_req)
             # read response
             result = json.loads(response.read())
             # build meta with headers as a dict
-            meta = response.info().dict
+            meta = dict(response.info().items())
             # http code
             code = response.getcode()
             # return result + meta tuple
             return (result, meta, code)
-        except urllib2.HTTPError as e:
+        except urllib.error.HTTPError as e:
             code = e.code
             result = json.loads(e.read())
             message = "HTTP Error (%d) from schema registry: %s %d" % (code,

@@ -1,12 +1,14 @@
 from avro import io
-import StringIO
+from io import BytesIO
 import json
+import logging
 import struct
 import sys
 
 from . import SerializerError
 
 MAGIC_BYTE = 0
+_LOGGER = logging.getLogger(__name__)
 
 HAS_FAST = False
 try:
@@ -16,7 +18,7 @@ except:
     pass
 
 
-class ContextStringIO(StringIO.StringIO):
+class ContextBytesIO(BytesIO):
     """
     Wrapper to allow use of StringIO via 'with' constructs.
     """
@@ -132,6 +134,7 @@ class MessageSerializer(object):
         try:
             schema = self.registry_client.get_by_id(schema_id)
         except:
+            _LOGGER.info("failed to get schema {} from registry".format(schema_id), exc_info=sys.exc_info())
             schema = None
 
         if not schema:
@@ -174,7 +177,7 @@ class MessageSerializer(object):
         if len(message) <= 5:
             raise SerializerError("message is too small to decode")
 
-        with ContextStringIO(message) as payload:
+        with ContextBytesIO(message) as payload:
             magic,schema_id = struct.unpack('>bI',payload.read(5))
             if magic != MAGIC_BYTE:
                 raise SerializerError("message does not start with magic byte")

@@ -9,4 +9,4 @@ class SerializerError(Exception):
         def __str__(self):
             return self.message
 
-from MessageSerializer import *
+from .MessageSerializer import *

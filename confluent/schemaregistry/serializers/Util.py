@@ -5,7 +5,7 @@ from avro import schema
 
 def parse_schema_from_string(schema_str):
     """Parse a schema given a schema string"""
-    return schema.parse(schema_str)
+    return schema.Parse(schema_str)
 
 def parse_schema_from_file(schema_path):
     """Parse a schema from a file path"""
